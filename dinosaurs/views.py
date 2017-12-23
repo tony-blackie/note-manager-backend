@@ -77,8 +77,16 @@ class FolderAPIView(APIView):
 
                 try:
                     folders = Folder.objects.filter(author=userId)
-                    print(folders)
-                    print('try worked without errors')
+                    if not folders:
+                        print('NOT case worked')
+                        Folder.objects.create(
+                            name = 'initial',
+                            parent = 0,
+                            is_root = True,
+                            author = request.user
+                        )
+
+                        print('folder creation worked')
                 except Folder.DoesNotExist:
                     print('folder creation worked')
                     Folder.objects.create(
