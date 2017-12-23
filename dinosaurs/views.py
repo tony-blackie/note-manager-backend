@@ -78,7 +78,6 @@ class FolderAPIView(APIView):
                 try:
                     folders = Folder.objects.filter(author=userId)
                     if not folders:
-                        print('NOT case worked')
                         Folder.objects.create(
                             name = 'initial',
                             parent = 0,
@@ -86,17 +85,14 @@ class FolderAPIView(APIView):
                             author = request.user
                         )
 
-                        print('folder creation worked')
-                except Folder.DoesNotExist:
-                    print('folder creation worked')
-                    Folder.objects.create(
-                        name = 'initial',
-                        parent = 0,
-                        is_root = True,
-                        author = request.user
-                    )
-
-                print('returning found folders')
+                # except Folder.DoesNotExist:
+                #     print('folder creation worked')
+                #     Folder.objects.create(
+                #         name = 'initial',
+                #         parent = 0,
+                #         is_root = True,
+                #         author = request.user
+                #     )
 
                 serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
 
