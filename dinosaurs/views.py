@@ -77,13 +77,18 @@ class FolderAPIView(APIView):
 
                 try:
                     folders = Folder.objects.filter(author=userId)
+                    print(folders)
+                    print('try worked without errors')
                 except Folder.DoesNotExist:
+                    print('folder creation worked')
                     Folder.objects.create(
                         name = 'initial',
                         parent = 0,
                         is_root = True,
                         author = request.user
                     )
+
+                print('returning found folders')
 
                 serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
 
