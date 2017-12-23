@@ -67,7 +67,7 @@ class FolderAPIView(APIView):
                 serializer = FolderSerializer(folders, many=True)
                 return Response(serializer.data)
 
-            if re.search(r'/folder/$', request.path):
+            if re.search(r'/folder/', request.path):
                 userId = request.user.id
 
                 if request.user.id == None:
@@ -89,17 +89,17 @@ class FolderAPIView(APIView):
 
                 return Response(serializer.data)
 
-            if re.search(r'/folder/', request.path):
-                userId = request.user.id
+            # if re.search(r'/folder/', request.path):
+            #     userId = request.user.id
 
-                try:
-                    folders = Folder.objects.filter(author=userId)
-                except Folder.DoesNotExist:
-                    return Response([])
+            #     try:
+            #         folders = Folder.objects.filter(author=userId)
+            #     except Folder.DoesNotExist:
+            #         return Response([])
 
-                serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+            #     serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
 
-                return Response(serializer.data)
+            #     return Response(serializer.data)
         else:
             id = int(remove_slashes(id))
             userId = request.user.id
