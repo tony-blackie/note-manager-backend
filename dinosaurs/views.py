@@ -75,24 +75,14 @@ class FolderAPIView(APIView):
                     message = 'Login is required'
                     return JsonResponse({'message': message}, status=status)
 
-                try:
-                    folders = Folder.objects.filter(author=userId)
-                    if not folders:
-                        Folder.objects.create(
-                            name = 'initial',
-                            parent = 0,
-                            is_root = True,
-                            author = request.user
-                        )
-
-                # except Folder.DoesNotExist:
-                #     print('folder creation worked')
-                #     Folder.objects.create(
-                #         name = 'initial',
-                #         parent = 0,
-                #         is_root = True,
-                #         author = request.user
-                #     )
+                folders = Folder.objects.filter(author=userId)
+                if not folders:
+                    Folder.objects.create(
+                        name = 'initial',
+                        parent = 0,
+                        is_root = True,
+                        author = request.user
+                    )
 
                 serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
 
