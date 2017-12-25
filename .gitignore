@@ -1,2 +1,5 @@
 exampleapp/local_settings.py
 *.sqlite3
+exampleapp/__pycache__/
+
+dinosaurs/__pycache__/
