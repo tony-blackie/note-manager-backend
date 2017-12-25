@@ -12,6 +12,7 @@ from rest_framework import exceptions
 import re
 from rest_framework.response import Response
 from django.http import JsonResponse
+import os
 
 def remove_slashes(string):
     return string.replace('/', '')
