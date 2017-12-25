@@ -28,7 +28,8 @@ SECRET_KEY = '1fpqkw=10wd9&-4fj^+ql_r)4$=j7lu4#0j7hodlyyv52fb0*('
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'note-manager-stage.herokuapp.com'
+    'note-manager-stage.herokuapp.com',
+    'localhost'
 ]
 
 # Application definition
