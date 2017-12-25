@@ -322,7 +322,7 @@ from django.views.generic import View
 # from django.http import HttpResponse
 # from django.conf import settings
 
-class FrontendAppView(ApiView):
+class FrontendAppView(APIView):
     """
     Serves the compiled frontend entry point (only works if you have run `yarn
     run build`).
