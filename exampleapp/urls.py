@@ -33,9 +33,8 @@ urlpatterns = [
     url(r'note/(?P<id>.*)', views.NoteAPIView.as_view()),
     url(r'^users/', views.PersonAPIView.as_view()),
     url(r'^questionnaire/', views.QuestionnaireViewAPI.as_view()),
-    # url(r'^', include(router.urls)),
+    url(r'^', include(router.urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^', views.FrontendAppView.as_view()),
 ]
