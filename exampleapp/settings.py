@@ -30,7 +30,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'note-manager-stage.herokuapp.com',
     'localhost',
-    '46.101.146.159'
+    '46.101.146.159',
+    'notes01stage.herokuapp.com'
 ]
 
 # Application definition
