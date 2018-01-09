@@ -13,8 +13,6 @@ class Person(User):
     def validate_password(self, value: str) -> str:
         return make_password(value)
 
-    # def do_something(self):
-
 
 class Folder(models.Model):
     name = models.TextField()
