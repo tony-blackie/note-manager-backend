@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from dinosaurs.serializers import PersonSerializer, FolderSerializer, NoteSerializer, GroupSerializer, QuestionnaireSerializer
-from dinosaurs.models import Folder, Note, Person, Questionnaire
+from dinosaurs.serializers import PersonSerializer, HashtagSerializer, NoteSerializer, GroupSerializer, QuestionnaireSerializer
+from dinosaurs.models import Note, Person, Questionnaire, Hashtag
 from django.contrib.auth.models import Group
 import pdb
 from django.http import HttpResponse, JsonResponse
@@ -56,19 +56,125 @@ class PersonAPIView(APIView):
 
         return HttpResponse(json.dumps(serializer.data))
 
-class FolderAPIView(APIView):
+# class FolderAPIView(APIView):
+#     permission_classes = [permissions.AllowAny]
+#     serializer_class = FolderSerializer
+#     queryset = Folder.objects.all()
+
+#     def get(self, request, id = None):
+#         if id == '':
+#             if re.search(r'admin/dinosaurs/folder/$', request.path):
+#                 folders = Folder.objects.all()
+#                 serializer = FolderSerializer(folders, many=True)
+#                 return Response(serializer.data)
+
+#             if re.search(r'/folder/', request.path):
+#                 userId = request.user.id
+
+#                 if request.user.id == None:
+#                     status = 400
+#                     message = 'Login is required'
+#                     return JsonResponse({'message': message}, status=status)
+
+#                 folders = Folder.objects.filter(author=userId)
+#                 if not folders:
+#                     Folder.objects.create(
+#                         name = 'initial',
+#                         parent = 0,
+#                         is_root = True,
+#                         author = request.user
+#                     )
+
+#                 serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+
+#                 return Response(serializer.data)
+
+#             # if re.search(r'/folder/', request.path):
+#             #     userId = request.user.id
+
+#             #     try:
+#             #         folders = Folder.objects.filter(author=userId)
+#             #     except Folder.DoesNotExist:
+#             #         return Response([])
+
+#             #     serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+
+#             #     return Response(serializer.data)
+#         else:
+#             id = int(remove_slashes(id))
+#             userId = request.user.id
+#             serializer = FolderSerializer(Folder.objects.get(author = request.user.id, id = id))
+#             return Response(serializer.data)
+
+#     def post(self, request, id = None):
+#         userId = request.user.id
+
+#         if request.data['parent'] != None:
+#             parentFolder = Folder.objects.get(id=request.data['parent'])
+#         else:
+#             foldersForCurrentUser = Folder.objects.filter(author=userId)
+#             for folder in foldersForCurrentUser:
+#                 if folder.is_root == True:
+#                     parentFolder = folder
+
+#         Folder.objects.create(
+#             name = request.data.get('name', 'newName'),
+#             parent = parentFolder.id,
+#             is_root = request.data.get('is_root', False),
+#             author = request.user
+#         )
+
+#         serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+#         return Response(serializer.data)
+
+#     def put(self, request, id = None):
+#         userId = request.user.id
+#         folderId = int(remove_slashes(id))
+#         folder = Folder.objects.get(id = folderId, author = userId)
+
+#         folder.name = request.data.get('name')
+#         folder.save()
+
+#         serializer = FolderSerializer(folder)
+#         return Response(serializer.data)
+
+#     def delete(self, request, id = None):
+#         userId = request.user.id
+#         folderId = int(remove_slashes(id))
+#         allFolders = Folder.objects.filter(author = userId)
+
+#         childFolderIdsToRemove = []
+
+#         pushParentIdIntoDeleteList(folderId, childFolderIdsToRemove, allFolders)
+
+#         for folderIdToRemove in childFolderIdsToRemove:
+#             folder = Folder.objects.get(id=folderIdToRemove)
+#             noteIds = folder.notes
+
+#             if folder.is_root == True:
+#                 return Response([])
+
+#             for note in noteIds.all():
+#                 dbNote = Note.objects.get(id=note.id)
+#                 dbNote.delete()
+#             folder.delete()
+
+#         return Response([])
+
+class HashtagAPIView(APIView):
     permission_classes = [permissions.AllowAny]
-    serializer_class = FolderSerializer
-    queryset = Folder.objects.all()
+    serializer_class = HashtagSerializer
+    queryset = Hashtag.objects.all()
 
     def get(self, request, id = None):
+        # pdb.set_trace()
         if id == '':
-            if re.search(r'admin/dinosaurs/folder/$', request.path):
-                folders = Folder.objects.all()
-                serializer = FolderSerializer(folders, many=True)
+            if re.search(r'admin/dinosaurs/hashtag/$', request.path):
+                hashtags = Hashtag.objects.all()
+                serializer = HashtagSerializer(hashtags, many=True)
                 return Response(serializer.data)
 
-            if re.search(r'/folder/', request.path):
+            if re.search(r'/hashtag/', request.path):
                 userId = request.user.id
 
                 if request.user.id == None:
@@ -76,16 +182,16 @@ class FolderAPIView(APIView):
                     message = 'Login is required'
                     return JsonResponse({'message': message}, status=status)
 
-                folders = Folder.objects.filter(author=userId)
-                if not folders:
-                    Folder.objects.create(
+                hashtags = Hashtag.objects.filter(author=userId)
+                if not hashtags:
+                    Hashtag.objects.create(
                         name = 'initial',
-                        parent = 0,
-                        is_root = True,
+                        # parent = 0,
+                        # is_root = True,
                         author = request.user
                     )
 
-                serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+                serializer = HashtagSerializer(Hashtag.objects.filter(author = request.user.id), many=True)
 
                 return Response(serializer.data)
 
@@ -103,61 +209,61 @@ class FolderAPIView(APIView):
         else:
             id = int(remove_slashes(id))
             userId = request.user.id
-            serializer = FolderSerializer(Folder.objects.get(author = request.user.id, id = id))
+            serializer = HashtagSerializer(Hashtag.objects.get(author = request.user.id, id = id))
             return Response(serializer.data)
 
     def post(self, request, id = None):
         userId = request.user.id
 
-        if request.data['parent'] != None:
-            parentFolder = Folder.objects.get(id=request.data['parent'])
-        else:
-            foldersForCurrentUser = Folder.objects.filter(author=userId)
-            for folder in foldersForCurrentUser:
-                if folder.is_root == True:
-                    parentFolder = folder
+        # if request.data['parent'] != None:
+        #     parentHashtag = Hashtag.objects.get(id=request.data['parent'])
+        # else:
+            # hashtagsForCurrentUser = Hashtag.objects.filter(author=userId)
+            # for hashtag in hashtagsForCurrentUser:
+            #     if hashtag.is_root == True:
+            #         parentHashtag = hashtag
 
-        Folder.objects.create(
+        Hashtag.objects.create(
             name = request.data.get('name', 'newName'),
-            parent = parentFolder.id,
-            is_root = request.data.get('is_root', False),
+            # parent = parentHashtag.id,
+            # is_root = request.data.get('is_root', False),
             author = request.user
         )
 
-        serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
+        serializer = HashtagSerializer(Hashtag.objects.filter(author = request.user.id), many=True)
         return Response(serializer.data)
 
     def put(self, request, id = None):
         userId = request.user.id
-        folderId = int(remove_slashes(id))
-        folder = Folder.objects.get(id = folderId, author = userId)
+        hashtagId = int(remove_slashes(id))
+        hashtag = Hashtag.objects.get(id = hashtagId, author = userId)
 
-        folder.name = request.data.get('name')
-        folder.save()
+        hashtag.name = request.data.get('name')
+        hashtag.save()
 
-        serializer = FolderSerializer(folder)
+        serializer = HashtagSerializer(hashtag)
         return Response(serializer.data)
 
     def delete(self, request, id = None):
         userId = request.user.id
-        folderId = int(remove_slashes(id))
-        allFolders = Folder.objects.filter(author = userId)
+        hashtagId = int(remove_slashes(id))
+        allHashtags = Hashtag.objects.filter(author = userId)
 
-        childFolderIdsToRemove = []
+        # childHashtagIdsToRemove = []
 
-        pushParentIdIntoDeleteList(folderId, childFolderIdsToRemove, allFolders)
+        # pushParentIdIntoDeleteList(hashtagId, childHashtagIdsToRemove, allHashtags)
 
-        for folderIdToRemove in childFolderIdsToRemove:
-            folder = Folder.objects.get(id=folderIdToRemove)
-            noteIds = folder.notes
+        # for hashtagIdToRemove in childHashtagIdsToRemove:
+        hashtag = Hashtag.objects.get(id=hashtagId)
+            # noteIds = hashtag.notes
 
-            if folder.is_root == True:
-                return Response([])
+            # if hashtag.is_root == True:
+            #     return Response([])
 
-            for note in noteIds.all():
-                dbNote = Note.objects.get(id=note.id)
-                dbNote.delete()
-            folder.delete()
+            # for note in noteIds.all():
+            #     dbNote = Note.objects.get(id=note.id)
+            #     dbNote.delete()
+        hashtag.delete()
 
         return Response([])
 
@@ -226,7 +332,7 @@ class NoteAPIView(APIView):
         note = Note.objects.create(
             name = request.data.get('name', 'newName'),
             text = request.data.get('text', 'defaultText'),
-            folder = parentFolder,
+            hashtag = request.data.get('hashtag', None),
             author = request.user
         )
 
@@ -240,6 +346,7 @@ class NoteAPIView(APIView):
 
         note.name = request.data['name']
         note.text = request.data['text']
+        note.hashtag = request.data['hashtag']
 
         note.save()
 
