@@ -26,9 +26,10 @@ class HashtagSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'name')
 
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
+    hashtags = serializers.PrimaryKeyRelatedField(many=True, queryset=Hashtag.objects.all())
     class Meta:
         model = Note
-        fields = ('id', 'name', 'hashtag', 'text', 'date')
+        fields = ('id', 'name', 'hashtags', 'text', 'date')
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:

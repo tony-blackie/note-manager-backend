@@ -39,7 +39,7 @@ class Note(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True, blank=True)
     # folder = models.ForeignKey(Hashtag, null=True, blank=True, related_name='notes', on_delete=models.CASCADE,)
-    hashtag = models.ManyToManyField(Hashtag, blank=True, null=True)
+    hashtags = models.ManyToManyField(Hashtag, blank=True, null=True)
     author = models.ForeignKey(Person, null=True, blank=True, related_name='notes', on_delete=models.CASCADE,)
 
     def __str__(self):

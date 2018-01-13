@@ -167,7 +167,6 @@ class HashtagAPIView(APIView):
     queryset = Hashtag.objects.all()
 
     def get(self, request, id = None):
-        # pdb.set_trace()
         if id == '':
             if re.search(r'admin/dinosaurs/hashtag/$', request.path):
                 hashtags = Hashtag.objects.all()
@@ -269,7 +268,6 @@ class HashtagAPIView(APIView):
 
 class NoteAPIView(APIView):
     permission_classes = [permissions.AllowAny]
-    serializer_class = NoteSerializer
     queryset = Note.objects.all()
 
     def get(self, request, id = None):
@@ -279,7 +277,7 @@ class NoteAPIView(APIView):
         if id == '':
             if re.search(r'admin/dinosaurs/note/$', request.path):
                 notes = Note.objects.all()
-                serializer = NoteSerializer(notes, many=True)
+                serializer = NoteSerializer(notes, context={'request': request}, many=True)
                 return Response(serializer.data)
 
             if re.search(r'/note/$', request.path):
@@ -296,7 +294,7 @@ class NoteAPIView(APIView):
                 except Note.DoesNotExist:
                     return Response([])
 
-                serializer = NoteSerializer(Note.objects.filter(author = request.user.id), many=True)
+                serializer = NoteSerializer(Note.objects.filter(author = request.user.id), context={'request': request}, many=True)
 
                 return Response(serializer.data)
 
@@ -308,7 +306,7 @@ class NoteAPIView(APIView):
                 except Note.DoesNotExist:
                     return Response([])
 
-                serializer = NoteSerializer(Note.objects.filter(author = request.user.id), many=True)
+                serializer = NoteSerializer(Note.objects.filter(author = request.user.id), context={'request': request}, many=True)
 
                 return Response(serializer.data)
         else:
@@ -319,24 +317,37 @@ class NoteAPIView(APIView):
 
     def post(self, request, id = None):
         userId = request.user.id
-        parentFolderId = request.data.get('parent', None)
-
-        if parentFolderId:
-            parentFolder = Folder.objects.get(id=int(parentFolderId))
-        else:
-            foldersForCurrentUser = Folder.objects.filter(author=userId)
-            for folder in foldersForCurrentUser:
-                if folder.is_root == True:
-                    parentFolder = folder
 
         note = Note.objects.create(
             name = request.data.get('name', 'newName'),
             text = request.data.get('text', 'defaultText'),
-            hashtag = request.data.get('hashtag', None),
             author = request.user
         )
 
-        serializer = NoteSerializer(note)
+        allHashtags = request.data.get('hashtags', None)
+        if allHashtags:
+            newHashtags = allHashtags.get('new', [])
+            existingHashtags = allHashtags.get('existing', [])
+
+            userHashtags = Hashtag.objects.all()
+
+            for hashtag in newHashtags:
+                isNew = True
+                for userHashtag in userHashtags:
+                    if userHashtag.name == hashtag and userHashtag.id not in existingHashtags:
+                        isNew = False
+                        existingHashtags.append(userHashtag.id)
+                if isNew:
+                    note.hashtags.create(name=hashtag, author=request.user)
+
+            for existingHashtag in existingHashtags:
+                selectedHashtag = Hashtag.objects.get(
+                    id = existingHashtag,
+                    author = request.user
+                )
+                note.hashtags.add(selectedHashtag)
+
+        serializer = NoteSerializer(note, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, id = None):
@@ -346,11 +357,15 @@ class NoteAPIView(APIView):
 
         note.name = request.data['name']
         note.text = request.data['text']
+
+        allHashtags = request.data.get('hashtags', None)
+        existingHashtags = allHashtags.get('existing', None)
+        newHashtags = allHashtags.get('new', None)
         note.hashtag = request.data['hashtag']
 
         note.save()
 
-        serializer = NoteSerializer(note)
+        serializer = NoteSerializer(note, context={'request': request})
         return Response(serializer.data)
 
     def delete(self, request, id=None):
@@ -359,7 +374,7 @@ class NoteAPIView(APIView):
 
         note.delete()
 
-        serializer = NoteSerializer(note)
+        serializer = NoteSerializer(note, context={'request': request})
         return Response(serializer.data)
 
 class QuestionnaireViewAPI(APIView):
