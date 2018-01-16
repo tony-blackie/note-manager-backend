@@ -288,28 +288,54 @@ class NoteAPIView(APIView):
             author = request.user
         )
 
-        allHashtags = request.data.get('hashtags', None)
+        selectedHashtags = request.data.get('hashtagsToAdd', None)
+        allHashtags = request.data.get('allHashtags', None)
+
+        pdb.set_trace()
+
         if allHashtags:
-            newHashtags = allHashtags.get('new', [])
-            existingHashtags = allHashtags.get('existing', [])
+            pdb.set_trace()
+            for hashtag in allHashtags:
+                pdb.set_trace()
+                if hasattr(hashtag, 'id'):
+                    pdb.set_trace()
+                else:
+                    pdb.set_trace()
+                    note.hashtags.create(name=hashtag['name'], author=request.user)
 
-            userHashtags = Hashtag.objects.all()
+        pdb.set_trace()
 
-            for hashtag in newHashtags:
-                isNew = True
-                for userHashtag in userHashtags:
-                    if userHashtag.name == hashtag and userHashtag.id not in existingHashtags:
-                        isNew = False
-                        existingHashtags.append(userHashtag.id)
-                if isNew:
-                    note.hashtags.create(name=hashtag, author=request.user)
+        for hashtag in selectedHashtags:
+            pdb.set_trace()
+            selectedHashtag = Hashtag.objects.get(
+                name = hashtag['name'],
+                author = request.user
+            )
+            pdb.set_trace()
+            note.hashtags.add(selectedHashtag)
 
-            for existingHashtag in existingHashtags:
-                selectedHashtag = Hashtag.objects.get(
-                    id = existingHashtag,
-                    author = request.user
-                )
-                note.hashtags.add(selectedHashtag)
+        # allHashtags = request.data.get('hashtags', None)
+        # if allHashtags:
+        #     newHashtags = allHashtags.get('new', [])
+        #     existingHashtags = allHashtags.get('existing', [])
+
+        #     userHashtags = Hashtag.objects.all()
+
+        #     for hashtag in newHashtags:
+        #         isNew = True
+        #         for userHashtag in userHashtags:
+        #             if userHashtag.name == hashtag and userHashtag.id not in existingHashtags:
+        #                 isNew = False
+        #                 existingHashtags.append(userHashtag.id)
+        #         if isNew:
+        #             note.hashtags.create(name=hashtag, author=request.user)
+
+        #     for existingHashtag in existingHashtags:
+        #         selectedHashtag = Hashtag.objects.get(
+        #             id = existingHashtag,
+        #             author = request.user
+        #         )
+        #         note.hashtags.add(selectedHashtag)
 
         serializer = NoteSerializer(note, context={'request': request})
         return Response(serializer.data)
