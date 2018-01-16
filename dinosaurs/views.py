@@ -185,26 +185,12 @@ class HashtagAPIView(APIView):
                 if not hashtags:
                     Hashtag.objects.create(
                         name = 'initial',
-                        # parent = 0,
-                        # is_root = True,
                         author = request.user
                     )
 
                 serializer = HashtagSerializer(Hashtag.objects.filter(author = request.user.id), many=True)
 
                 return Response(serializer.data)
-
-            # if re.search(r'/folder/', request.path):
-            #     userId = request.user.id
-
-            #     try:
-            #         folders = Folder.objects.filter(author=userId)
-            #     except Folder.DoesNotExist:
-            #         return Response([])
-
-            #     serializer = FolderSerializer(Folder.objects.filter(author = request.user.id), many=True)
-
-            #     return Response(serializer.data)
         else:
             id = int(remove_slashes(id))
             userId = request.user.id
@@ -214,18 +200,8 @@ class HashtagAPIView(APIView):
     def post(self, request, id = None):
         userId = request.user.id
 
-        # if request.data['parent'] != None:
-        #     parentHashtag = Hashtag.objects.get(id=request.data['parent'])
-        # else:
-            # hashtagsForCurrentUser = Hashtag.objects.filter(author=userId)
-            # for hashtag in hashtagsForCurrentUser:
-            #     if hashtag.is_root == True:
-            #         parentHashtag = hashtag
-
         Hashtag.objects.create(
             name = request.data.get('name', 'newName'),
-            # parent = parentHashtag.id,
-            # is_root = request.data.get('is_root', False),
             author = request.user
         )
 
@@ -248,20 +224,8 @@ class HashtagAPIView(APIView):
         hashtagId = int(remove_slashes(id))
         allHashtags = Hashtag.objects.filter(author = userId)
 
-        # childHashtagIdsToRemove = []
-
-        # pushParentIdIntoDeleteList(hashtagId, childHashtagIdsToRemove, allHashtags)
-
-        # for hashtagIdToRemove in childHashtagIdsToRemove:
         hashtag = Hashtag.objects.get(id=hashtagId)
-            # noteIds = hashtag.notes
 
-            # if hashtag.is_root == True:
-            #     return Response([])
-
-            # for note in noteIds.all():
-            #     dbNote = Note.objects.get(id=note.id)
-            #     dbNote.delete()
         hashtag.delete()
 
         return Response([])
