@@ -338,42 +338,73 @@ class NoteAPIView(APIView):
         noteId = int(remove_slashes(id))
         userId = request.user.id
 
+        pdb.set_trace()
+
         note = Note.objects.get(id = noteId)
+
+        pdb.set_trace()
 
         name = request.data.get('name', None)
         if name:
             note.name = name
 
+        pdb.set_trace()
+
         text = request.data.get('text', None)
         if text:
             note.text = text
 
+        pdb.set_trace()
+
         selectedHashtags = request.data.get('hashtagsToAdd', None)
         allHashtags = request.data.get('allHashtags', None)
 
+        pdb.set_trace()
+
         if allHashtags:
+            pdb.set_trace()
             for hashtag in allHashtags:
-                if hasattr(hashtag, 'id'):
+                pdb.set_trace()
+                isNew = hashtag.get('id', None)
+                if isNew:
+                    pdb.set_trace()
                     #find a way to do it without this
                     print("")
                 else:
+                    pdb.set_trace()
                     note.hashtags.create(name=hashtag['name'], author=request.user)
 
-        for existingHashtag in note.hashtags:
+        pdb.set_trace()
+
+        hashtagsExistingOnNote = Hashtag.objects.filter(note__id=noteId)
+
+        pdb.set_trace()
+
+        for existingHashtag in hashtagsExistingOnNote:
+            pdb.set_trace()
             wasDeleted = True
             for newHashtag in selectedHashtags:
-                if existingHashtag.name == newHashtag.name:
+                pdb.set_trace()
+                if existingHashtag.name == newHashtag['name']:
+                    pdb.set_trace()
                     wasDeleted = False
             if wasDeleted:
+                pdb.set_trace()
                 note.hashtags.remove(existingHashtag)
 
         for newHashtag in selectedHashtags:
+            pdb.set_trace()
             isNew = True
-            for existingHashtag in note.hashtags:
-                if existingHashtag.name == newHashtag.name:
+            for existingHashtag in hashtagsExistingOnNote:
+                pdb.set_trace()
+                if existingHashtag.name == newHashtag['name']:
+                    pdb.set_trace()
                     isNew = False
             if isNew:
+                pdb.set_trace()
                 note.hashtags.add(newHashtag)
+
+        pdb.set_trace()
 
         note.save()
 
