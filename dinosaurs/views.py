@@ -291,19 +291,13 @@ class NoteAPIView(APIView):
         selectedHashtags = request.data.get('hashtagsToAdd', None)
         allHashtags = request.data.get('allHashtags', None)
 
-        pdb.set_trace()
-
         if allHashtags:
-            pdb.set_trace()
             for hashtag in allHashtags:
-                pdb.set_trace()
                 if hasattr(hashtag, 'id'):
-                    pdb.set_trace()
+                    #find a way to do it without this
+                    print("")
                 else:
-                    pdb.set_trace()
                     note.hashtags.create(name=hashtag['name'], author=request.user)
-
-        pdb.set_trace()
 
         for hashtag in selectedHashtags:
             pdb.set_trace()
@@ -342,16 +336,44 @@ class NoteAPIView(APIView):
 
     def put(self, request, id = None):
         noteId = int(remove_slashes(id))
+        userId = request.user.id
 
         note = Note.objects.get(id = noteId)
 
-        note.name = request.data['name']
-        note.text = request.data['text']
+        name = request.data.get('name', None)
+        if name:
+            note.name = name
 
-        allHashtags = request.data.get('hashtags', None)
-        existingHashtags = allHashtags.get('existing', None)
-        newHashtags = allHashtags.get('new', None)
-        note.hashtag = request.data['hashtag']
+        text = request.data.get('text', None)
+        if text:
+            note.text = text
+
+        selectedHashtags = request.data.get('hashtagsToAdd', None)
+        allHashtags = request.data.get('allHashtags', None)
+
+        if allHashtags:
+            for hashtag in allHashtags:
+                if hasattr(hashtag, 'id'):
+                    #find a way to do it without this
+                    print("")
+                else:
+                    note.hashtags.create(name=hashtag['name'], author=request.user)
+
+        for existingHashtag in note.hashtags:
+            wasDeleted = True
+            for newHashtag in selectedHashtags:
+                if existingHashtag.name == newHashtag.name:
+                    wasDeleted = False
+            if wasDeleted:
+                note.hashtags.remove(existingHashtag)
+
+        for newHashtag in selectedHashtags:
+            isNew = True
+            for existingHashtag in note.hashtags:
+                if existingHashtag.name == newHashtag.name:
+                    isNew = False
+            if isNew:
+                note.hashtags.add(newHashtag)
 
         note.save()
 
