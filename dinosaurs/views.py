@@ -402,7 +402,8 @@ class NoteAPIView(APIView):
                     isNew = False
             if isNew:
                 pdb.set_trace()
-                note.hashtags.add(newHashtag)
+                newHashtagObj = Hashtag.objects.get(id=newHashtag['id'])
+                note.hashtags.add(newHashtagObj)
 
         pdb.set_trace()
 
