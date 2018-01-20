@@ -1,6 +1,8 @@
 exampleapp/local_settings.py
 *.sqlite3
 exampleapp/__pycache__/
+staticfiles/admin
+staticfiles/rest_framework
 
 dinosaurs/__pycache__/
 
