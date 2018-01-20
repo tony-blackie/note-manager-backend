@@ -3,3 +3,5 @@ exampleapp/local_settings.py
 exampleapp/__pycache__/
 
 dinosaurs/__pycache__/
+
+dinosaurs/migrations/__pycache__/
