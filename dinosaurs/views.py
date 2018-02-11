@@ -309,7 +309,6 @@ class NoteAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, id = None):
-        pdb.set_trace()
         noteId = int(remove_slashes(id))
         userId = request.user.id
 
